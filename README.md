@@ -48,3 +48,37 @@ Hot reload memperbarui tampilan di aplikasi tanpa menghapus state, sehingga peru
 
 <hr>
 </details>
+
+### Tugas 8
+
+<details>
+<summary>1. Jelaskan perbedaan antara Navigator.push() dan Navigator.pushReplacement() pada Flutter. Dalam kasus apa sebaiknya masing-masing digunakan pada aplikasi.</summary>
+<hr>
+Navigator.push() digunakan untuk menambahkan halaman baru ke atas stack navigasi tanpa menghapus halaman sebelumnya, sehingga pengguna masih dapat kembali ke halaman sebelumnya menggunakan tombol back. Sementara itu, Navigator.pushReplacement() menggantikan halaman saat ini dengan halaman baru, sehingga halaman sebelumnya dihapus dari stack dan tidak dapat dikembalikan dengan tombol back. Gunakan Navigator.push() ketika ingin mempertahankan alur navigasi normal dan memungkinkan pengguna kembali, misalnya saat berpindah dari daftar ke detail. Sedangkan Navigator.pushReplacement() cocok digunakan ketika halaman sebelumnya tidak perlu diakses lagi, seperti setelah login sukses menuju halaman utama.
+
+<hr>
+</details>
+
+<details>
+<summary>2. Bagaimana kamu memanfaatkan hierarchy widget seperti Scaffold, AppBar, dan Drawer untuk membangun struktur halaman yang konsisten di seluruh aplikasi?</summary>
+<hr>
+Struktur halaman yang konsisten dapat dibangun dengan menjadikan `Scaffold` sebagai kerangka utama pada setiap screen. `AppBar` digunakan untuk menampilkan elemen header yang seragam seperti judul atau action button. `Drawer` berperan sebagai menu navigasi global yang dapat diakses dari seluruh halaman. Dengan membuat widget dasar yang menyertakan `Scaffold`, `AppBar`, dan `Drawer`, setiap halaman hanya perlu mengisi bagian `body`, sehingga tampilan dan navigasi tetap konsisten di seluruh aplikasi.
+
+<hr>
+</details>
+
+<details>
+<summary>3. Dalam konteks desain antarmuka, apa kelebihan menggunakan layout widget seperti Padding, SingleChildScrollView, dan ListView saat menampilkan elemen-elemen form? Berikan contoh penggunaannya dari aplikasi kamu.</summary>
+<hr>
+Penggunaan Padding membantu memberi jarak antar elemen agar tampilan lebih rapi dan mudah dibaca. SingleChildScrollView memungkinkan seluruh form dapat digulir ketika konten melebihi tinggi layar, sehingga tidak terjadi overflow. ListView efektif ketika jumlah elemen form bersifat dinamis atau banyak, karena bersifat scrollable dan efisien dalam rendering. Contoh penggunaan pada halaman pendaftaran: form dibungkus dengan SingleChildScrollView, setiap input diberi Padding untuk jarak antar field, dan jika jumlah input berubah-ubah, seluruh field ditampilkan menggunakan ListView agar tetap responsif dan nyaman digunakan.
+
+<hr>
+</details>
+
+<details>
+<summary>4. Bagaimana kamu menyesuaikan warna tema agar aplikasi Football Shop memiliki identitas visual yang konsisten dengan brand toko?.</summary>
+<hr>
+Warna tiap komponen diubah sesuai dengan front-end pada aplikasi web django
+
+<hr>
+</details>
