@@ -15,18 +15,12 @@ class ItemCard extends StatelessWidget {
       color: item.color,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap: () {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(content: Text("Kamu telah menekan tombol ${item.name}!"))
-            );
-            
-            if (item.name == "Create Product") {
-            Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ProductFormPage()));
+        onTap: () {            
+          if (item.name == "Create Product") {
+          Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const ProductFormPage()));
           }
         },
         child: Container(

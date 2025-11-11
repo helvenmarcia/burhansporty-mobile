@@ -28,7 +28,7 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Burhansporty',
+          'BurhanSporty',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
