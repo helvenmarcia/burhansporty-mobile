@@ -1,44 +1,91 @@
 import 'package:flutter/material.dart';
 import 'package:burhansporty/screens/product_form.dart';
 import 'package:burhansporty/screens/menu.dart';
+import 'package:burhansporty/screens/product_entry_list.dart';
 
 class ItemCard extends StatelessWidget {
-  // Menampilkan kartu dengan ikon dan nama.
-
   final ItemHomepage item;
 
   const ItemCard(this.item, {super.key});
 
+  void _handleTap(BuildContext context) {
+    if (item.name == "All Products") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ProductEntryListPage(
+            onlyMine: false,
+          ),
+        ),
+      );
+    } else if (item.name == "My Products") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ProductEntryListPage(
+            onlyMine: true,
+          ),
+        ),
+      );
+    } else if (item.name == "Create Product") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ProductFormPage(),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Material(
-      color: item.color,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
+      elevation: 3,
+      shadowColor: Colors.black.withOpacity(0.12),
       child: InkWell(
-        onTap: () {            
-          if (item.name == "Create Product") {
-          Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const ProductFormPage()));
-          }
-        },
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => _handleTap(context),
         child: Container(
-          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                item.color.withOpacity(0.95),
+                item.color.withOpacity(0.8),
+              ],
+            ),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  item.icon,
-                  color: Colors.white,
-                  size: 30.0,
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withOpacity(0.18),
+                  ),
+                  child: Icon(
+                    item.icon,
+                    color: Colors.white,
+                    size: 26,
+                  ),
                 ),
-                const Padding(padding: EdgeInsets.all(3)),
+                const SizedBox(height: 8),
                 Text(
                   item.name,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white),
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),

@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:burhansporty/widgets/left_drawer.dart';
 import 'package:flutter/services.dart';
 
+import 'dart:convert';
+import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:burhansporty/screens/menu.dart';
+
 class ProductFormPage extends StatefulWidget {
   const ProductFormPage({super.key});
 
@@ -24,246 +29,297 @@ class _ProductFormPageState extends State<ProductFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
-          child: Text(
-            'Create Product Form',
-          ),
-        ),
-        backgroundColor: Colors.indigo,
+        title: const Text('Add Product'),
+        backgroundColor: theme.colorScheme.primary,
         foregroundColor: Colors.white,
       ),
-      // TODO: Tambahkan drawer yang sudah dibuat di sini
       drawer: const LeftDrawer(),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Title
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    hintText: "Product Title",
-                    labelText: "Title",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                  ),
-                  onChanged: (v) => setState(() => _title = v),
-                  validator: (v) {
-                    if (v == null || v.trim().isEmpty) return "Title is required.";
-                    return null;
-                  },
-                ),
-              ),
 
-              // Price (IDR)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: InputDecoration(
-                    hintText: "e.g., 150000",
-                    labelText: "Price (IDR)",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                  ),
-                  onChanged: (v) => setState(() => _price = int.tryParse(v) ?? 0),
-                  validator: (v) {
-                    final n = int.tryParse(v ?? "");
-                    if (n == null || n < 0) return "Enter a valid non-negative price.";
-                    return null;
-                  },
+      // Body
+      body: Container(
+        color: Colors.grey[100],
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
-              ),
-
-              // Thumbnail URL
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    hintText: "https://...",
-                    labelText: "Thumbnail URL",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                  ),
-                  onChanged: (v) => setState(() => _thumbnail = v),
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return null; // optional
-                    final ok = v.startsWith('http://') || v.startsWith('https://');
-                    if (!ok) return "URL must start with http:// or https://";
-                    return null;
-                  },
-                ),
-              ),
-
-              // Category (text)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    hintText: "e.g., clothes, shoes, accessories",
-                    labelText: "Category",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                  ),
-                  onChanged: (v) => setState(() => _category = v),
-                  validator: (v) {
-                    if (v == null || v.trim().isEmpty) return "Category is required.";
-                    return null;
-                  },
-                ),
-              ),
-
-              // Description
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    hintText: "Description",
-                    labelText: "Description",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                  ),
-                  onChanged: (v) => setState(() => _description = v),
-                ),
-              ),
-
-              // Sold
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: InputDecoration(
-                    hintText: "0",
-                    labelText: "Sold",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                  ),
-                  onChanged: (v) => setState(() => _sold = int.tryParse(v) ?? 0),
-                  validator: (v) {
-                    final n = int.tryParse(v ?? "");
-                    if (n == null || n < 0) return "Enter a valid non-negative number.";
-                    return null;
-                  },
-                ),
-              ),
-
-              // Stock
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: InputDecoration(
-                    hintText: "0",
-                    labelText: "Stock",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                  ),
-                  onChanged: (v) => setState(() => _stock = int.tryParse(v) ?? 0),
-                  validator: (v) {
-                    final n = int.tryParse(v ?? "");
-                    if (n == null || n < 0) return "Enter a valid non-negative number.";
-                    return null;
-                  },
-                ),
-              ),
-
-              // Featured
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SwitchListTile(
-                  title: const Text("Featured"),
-                  value: _isFeatured,
-                  onChanged: (val) => setState(() => _isFeatured = val),
-                ),
-              ),
-
-              // Save Button
-              Align(
-                alignment: Alignment.bottomCenter,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.indigo),
-                    ),
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        // Capture current values so the dialog won’t be affected by later resets
-                        final title = _title;
-                        final price = _price;
-                        final thumb = _thumbnail;
-                        final category = _category;
-                        final desc = _description;
-                        final sold = _sold;
-                        final stock = _stock;
-                        final featured = _isFeatured;
-
-                        await showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Product saved'),
-                            content: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Title: $title'),
-                                  Text('Price: $price'),
-                                  Text('Thumbnail: ${thumb.isEmpty ? "-" : thumb}'),
-                                  Text('Category: $category'),
-                                  Text('Description: ${desc.isEmpty ? "-" : desc}'),
-                                  Text('Sold: $sold'),
-                                  Text('Stock: $stock'),
-                                  Text('Featured: ${featured ? "Yes" : "No"}'),
-                                ],
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Header
+                        Center(
+                          child: Column(
+                            children: [
+                              Text(
+                                'Add Product',
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text('OK'),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Fill in the details for your new product.',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: Colors.grey[600],
+                                ),
+                                textAlign: TextAlign.center,
                               ),
                             ],
                           ),
-                        );
+                        ),
+                        const SizedBox(height: 20),
 
-                        _formKey.currentState!.reset();
-                        if (!mounted) return;
-                        setState(() {
-                          _title = '';
-                          _category = '';
-                          _thumbnail = '';
-                          _description = '';
-                          _isFeatured = false;
-                          _price = 0;
-                          _sold = 0;
-                          _stock = 0;
-                        });
-                      }
-                    },
-                    child: const Text(
-                      "Save Product",
-                      style: TextStyle(color: Colors.white),
+                        // Basic info
+                        Text(
+                          'Basic Information',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          decoration: InputDecoration(
+                            hintText: 'Product Title',
+                            labelText: 'Title',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          onChanged: (v) => setState(() => _title = v),
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) {
+                              return 'Title is required.';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          decoration: InputDecoration(
+                            hintText: 'e.g., 150000',
+                            labelText: 'Price (IDR)',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          onChanged: (v) =>
+                              setState(() => _price = int.tryParse(v) ?? 0),
+                          validator: (v) {
+                            final n = int.tryParse(v ?? '');
+                            if (n == null || n < 0) {
+                              return 'Enter a valid non-negative price.';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          decoration: InputDecoration(
+                            hintText: 'https://...',
+                            labelText: 'Thumbnail URL',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          onChanged: (v) => setState(() => _thumbnail = v),
+                          validator: (v) {
+                            if (v == null || v.isEmpty) {
+                              return null;
+                            }
+                            final ok = v.startsWith('http://') ||
+                                v.startsWith('https://');
+                            if (!ok) {
+                              return 'URL must start with http:// or https://';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          decoration: InputDecoration(
+                            hintText: 'e.g., clothes, shoes, accessories',
+                            labelText: 'Category',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          onChanged: (v) => setState(() => _category = v),
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) {
+                              return 'Category is required.';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          maxLines: 4,
+                          decoration: InputDecoration(
+                            hintText: 'Description',
+                            labelText: 'Description',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          onChanged: (v) => setState(() => _description = v),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Inventory
+                        Text(
+                          'Inventory',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                decoration: InputDecoration(
+                                  hintText: '0',
+                                  labelText: 'Sold',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                                onChanged: (v) =>
+                                    setState(() => _sold = int.tryParse(v) ?? 0),
+                                validator: (v) {
+                                  final n = int.tryParse(v ?? '');
+                                  if (n == null || n < 0) {
+                                    return 'Enter a valid non-negative number.';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                decoration: InputDecoration(
+                                  hintText: '0',
+                                  labelText: 'Stock',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                                onChanged: (v) =>
+                                    setState(() => _stock = int.tryParse(v) ?? 0),
+                                validator: (v) {
+                                  final n = int.tryParse(v ?? '');
+                                  if (n == null || n < 0) {
+                                    return 'Enter a valid non-negative number.';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Visibility
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Featured product',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Switch(
+                              value: _isFeatured,
+                              onChanged: (val) =>
+                                  setState(() => _isFeatured = val),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Submit button
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton(
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                final response = await request.postJson(
+                                  "https://helven-marcia-burhansporty.pbp.cs.ui.ac.id/create-flutter/",
+                                  jsonEncode({
+                                    "title": _title,
+                                    "price": _price,
+                                    "description": _description,
+                                    "thumbnail": _thumbnail,
+                                    "category": _category,
+                                    "is_featured": _isFeatured,
+                                    "stock": _stock,
+                                    "sold": _sold,
+                                  }),
+                                );
+
+                                if (!context.mounted) return;
+
+                                if (response['status'] == 'success') {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Product successfully saved!'),
+                                    ),
+                                  );
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MyHomePage(),
+                                    ),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Something went wrong, please try again.',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            child: const Text('Save Product'),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),
